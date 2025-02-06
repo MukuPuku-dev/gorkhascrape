@@ -1,35 +1,160 @@
-from PIL import Image, ImageDraw, ImageFont
-import textwrap
+import imgkit
 import os
 
 # Constants
 INPUT_FILE = 'formatted_output.txt'
 OUTPUT_IMAGE_PREFIX = 'output_image'
 OUTPUT_FOLDER = 'output_images'
-FONT_PATH = 'NotoSansDevanagari-Regular.ttf'  # Path to a Nepali Unicode font file
+FONT_NAME = 'Kalimati'  # Use installed font name
 FONT_SIZE = 30
 IMAGE_WIDTH = 1000
-IMAGE_HEIGHT = 1400
-LINE_SPACING = 40
 MARGIN = 50
 MAX_QUESTIONS_PER_IMAGE = 5
+TEXT_WIDTH = IMAGE_WIDTH - 2 * MARGIN
 
 # Create output folder if it doesn't exist
-if not os.path.exists(OUTPUT_FOLDER):
-    os.makedirs(OUTPUT_FOLDER)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+# Ask user to choose a style
+styles = {
+    "1": "Classic",
+    "2": "Modern",
+    "3": "Minimalist",
+    "4": "Playful",
+    "5": "Elegant",
+    "6": "Dark Mode",
+    "7": "Newspaper",
+    "8": "Tech",
+    "9": "Handwritten",
+    "10": "Royal",
+    "11": "Retro",
+    "12": "Gradient"
+}
 
-# Load font
-try:
-    font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
-except IOError:
-    print(f"Error: Font file '{FONT_PATH}' not found. Please provide a valid Nepali Unicode font.")
-    exit()
+print("Choose a style for your question-answer format:")
+for key, value in styles.items():
+    print(f"{key}. {value}")
+
+style_choice = input("Enter the style number (1-12): ").strip()
+
+# Define different CSS styles
+def get_style(style_choice):
+    if style_choice == "1":  # Classic
+        return """
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; color: #333; background: #fff; }
+        .question { font-weight: bold; color: black; margin-bottom: 10px; }
+        .answer { font-style: italic; color: #555; margin-bottom: 20px; }
+        hr { border: 1px solid #ccc; }
+        """
+    elif style_choice == "2":  # Modern
+        return """
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: #f8f9fa; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); }
+        .question { font-weight: bold; font-size: 36px; color: #007bff; border-left: 5px solid #007bff; padding-left: 15px; background: #e9f2ff; margin-bottom: 10px; padding: 10px; border-radius: 5px; }
+        .answer { font-size: 32px; color: #28a745; font-style: italic; background: #ebfbee; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
+        hr { border: none; height: 2px; background: linear-gradient(to right, #ddd, #bbb, #ddd); margin: 20px 0; }
+        """
+    elif style_choice == "3":  # Minimalist
+        return """
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: #fff; color: #222; text-align: center; }
+        .question { font-weight: bold; font-size: 34px; color: #000; margin-bottom: 10px; }
+        .answer { font-size: 30px; color: #444; margin-bottom: 20px; }
+        hr { border-top: 1px solid #ddd; }
+        """
+    elif style_choice == "4":  # Playful
+        return """
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: #ffefd5; }
+        .question { font-weight: bold; font-size: 34px; color: #ff4500; background: #ffd700; padding: 10px; border-radius: 10px; }
+        .answer { font-size: 30px; color: #008000; font-style: italic; background: #adff2f; padding: 10px; border-radius: 10px; }
+        hr { border-top: 2px dashed #ff4500; }
+        """
+    elif style_choice == "5":  # Elegant
+        return """
+        body { font-family: 'Kalimati', serif; font-size: 30px; background: #f3e5ab; color: #333; }
+        .question { font-weight: bold; font-size: 36px; color: #b8860b; border-bottom: 2px solid #b8860b; margin-bottom: 10px; }
+        .answer { font-size: 32px; color: #6b4226; font-style: italic; }
+        hr { border-top: 2px solid #b8860b; }
+        """
+    elif style_choice == "6":  # Dark Mode
+        return """
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: #222; color: #fff; }
+        .question { font-weight: bold; font-size: 34px; color: #ffcc00; border-left: 4px solid #ffcc00; padding-left: 10px; }
+        .answer { font-size: 30px; color: #0ff; font-style: italic; }
+        hr { border-top: 1px solid #666; }
+        """
+    elif style_choice == "7":  # Newspaper
+        return """
+        body { font-family: 'Times New Roman', serif; font-size: 30px; background: #f4f4f4; color: #333; }
+        .question { font-weight: bold; font-size: 34px; color: black; text-decoration: underline; }
+        .answer { font-size: 30px; color: #444; font-style: italic; }
+        hr { border-top: 1px dashed black; }
+        """
+    elif style_choice == "8":  # Tech
+        return """
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: #001f3f; color: #0ff; text-shadow: 0px 0px 5px #0ff; }
+        .question { font-weight: bold; font-size: 34px; color: #0ff; border-left: 4px solid #0ff; padding-left: 10px; }
+        .answer { font-size: 30px; color: #39ff14; font-style: italic; }
+        hr { border-top: 1px solid #0ff; }
+        """
+    elif style_choice == "9":  # Handwritten
+        return """
+        body { font-family: 'Patrick Hand', cursive; font-size: 30px; background: #f9f4dc; color: #5a4231; }
+        .question { font-weight: bold; font-size: 34px; color: #3e2723; background: #fff8e1; padding: 10px; border-radius: 10px; border: 2px dashed #795548; }
+        .answer { font-size: 30px; color: #5d4037; font-style: italic; background: #ffecb3; padding: 10px; border-radius: 10px; }
+        hr { border-top: 2px dashed #795548; }
+        """
+    elif style_choice == "10":  # Royal
+        return """
+        body { font-family: 'Kalimati', serif; font-size: 30px; background: #4b0082; color: #ffd700; }
+        .question { font-weight: bold; font-size: 36px; color: #ffd700; border-bottom: 2px solid #ffd700; margin-bottom: 10px; }
+        .answer { font-size: 32px; color: #dda0dd; font-style: italic; }
+        hr { border-top: 2px solid #ffd700; }
+        """
+    elif style_choice == "11":  # Retro
+        return """
+        body { font-family: 'Press Start 2P', cursive; font-size: 20px; background: #ffcc00; color: #000; }
+        .question { font-weight: bold; font-size: 24px; color: #ff0000; background: #fff; padding: 5px; border-radius: 5px; }
+        .answer { font-size: 22px; color: #0000ff; font-style: italic; background: #fff; padding: 5px; border-radius: 5px; }
+        hr { border-top: 2px dashed #000; }
+        """
+    elif style_choice == "12":  # Gradient
+        return """
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: linear-gradient(to right, #ff9a9e, #fad0c4); color: #222; }
+        .question { font-weight: bold; font-size: 34px; color: #fff; background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px; }
+        .answer { font-size: 30px; color: #fff; font-style: italic; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px; }
+        hr { border-top: 2px solid white; }
+        """
+    else:  # Default to Classic if an invalid choice is entered
+        return get_style("1")
+    
+
+def create_html_content(questions_and_answers, style_choice):
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <style>
+    {get_style(style_choice)}
+    </style>
+    </head>
+    <body>
+    <div class="container">
+    """
+
+    for idx, (question, answer) in enumerate(questions_and_answers):
+        html_content += f'<div class="question"><span class="question-number">{idx + 1}.</span> {question}</div>\n'
+        html_content += f'<div class="answer">उत्तर: {answer}</div>\n'
+        if idx < len(questions_and_answers) - 1:
+            html_content += "<hr>"
+
+    html_content += """
+    </div>
+    </body>
+    </html>
+    """
+    return html_content
 
 def extract_questions_and_answers(file_path):
-    """
-    Extract questions and answers from the formatted text file.
-    Returns a list of tuples: [(question, answer), ...]
-    """
     questions_and_answers = []
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
@@ -49,55 +174,49 @@ def extract_questions_and_answers(file_path):
                 current_answer = None
 
     return questions_and_answers
-
-def wrap_text(text, max_width):
-    """
-    Wrap text into multiple lines based on the max width.
-    """
-    wrapper = textwrap.TextWrapper(width=max_width)
-    return wrapper.wrap(text)
-
-def create_image_with_questions(questions_and_answers, image_number):
-    """
-    Create an image with a list of questions and answers.
-    """
-    image = Image.new('RGB', (IMAGE_WIDTH, IMAGE_HEIGHT), color=(255, 255, 255))
-    draw = ImageDraw.Draw(image)
-
-    y = MARGIN
-    for idx, (question, answer) in enumerate(questions_and_answers):
-        # Draw question
-        question_text = f"{idx + 1}. {question}"
-        wrapped_question = wrap_text(question_text, max_width=80)  # Wrap text
-        for line in wrapped_question:
-            draw.text((MARGIN, y), line, font=font, fill=(0, 0, 0))
-            y += LINE_SPACING
-
-        # Draw answer
-        answer_text = f"   उत्तर: {answer}"
-        wrapped_answer = wrap_text(answer_text, max_width=80)  # Wrap text
-        for line in wrapped_answer:
-            draw.text((MARGIN, y), line, font=font, fill=(0, 0, 0))
-            y += LINE_SPACING
-
-        y += LINE_SPACING  # Extra spacing between Q&A pairs
-
-    # Save the image
-    output_path = os.path.join(OUTPUT_FOLDER, f"{OUTPUT_IMAGE_PREFIX}_{image_number}.png")
-    image.save(output_path)
-    print(f"Saved image: {output_path}")
-
 def generate_images_from_file(file_path):
-    """
-    Generate images from the formatted text file.
-    """
     questions_and_answers = extract_questions_and_answers(file_path)
+    image_number = 1
+    current_questions = []
 
-    # Split questions and answers into chunks of MAX_QUESTIONS_PER_IMAGE
-    for i in range(0, len(questions_and_answers), MAX_QUESTIONS_PER_IMAGE):
-        chunk = questions_and_answers[i:i + MAX_QUESTIONS_PER_IMAGE]
-        image_number = (i // MAX_QUESTIONS_PER_IMAGE) + 1
-        create_image_with_questions(chunk, image_number)
+    for question_and_answer in questions_and_answers:
+        current_questions.append(question_and_answer)
+
+        if len(current_questions) == MAX_QUESTIONS_PER_IMAGE:
+            html_content = create_html_content(current_questions,style_choice)
+            output_path = os.path.join(OUTPUT_FOLDER, f"{OUTPUT_IMAGE_PREFIX}_{image_number}.jpg")
+
+            options = {
+                'encoding': 'UTF-8',
+                'quality': 100,
+                'width': IMAGE_WIDTH,
+                'enable-local-file-access': ''  # Ensure access to system fonts
+            }
+
+            try:
+                imgkit.from_string(html_content, output_path, options=options)
+                print(f"Saved image: {OUTPUT_IMAGE_PREFIX}_{image_number}.jpg")
+            except Exception as e:
+                print(f"Error generating image: {e}")
+
+            image_number += 1
+            current_questions = []
+
+    # Handle any remaining questions
+    if current_questions:
+        html_content = create_html_content(current_questions)
+        output_path = os.path.join(OUTPUT_FOLDER, f"{OUTPUT_IMAGE_PREFIX}_{image_number}.jpg")
+        options = {
+            'encoding': 'UTF-8',
+            'quality': 100,
+            'width': IMAGE_WIDTH,
+            'enable-local-file-access': ''
+        }
+        try:
+            imgkit.from_string(html_content, output_path, options=options)
+            print(f"Saved image: {OUTPUT_IMAGE_PREFIX}_{image_number}.jpg")
+        except Exception as e:
+            print(f"Error generating image: {e}")
 
 # Run the program
 generate_images_from_file(INPUT_FILE)

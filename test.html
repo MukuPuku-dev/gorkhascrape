@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question & Answer Formatter</title>
+    <style>
+        body { font-family: 'Kalimati', sans-serif; text-align: center; padding: 20px; }
+        #output { width: 800px; margin: auto; padding: 20px; border-radius: 10px; }
+        .question { font-weight: bold; font-size: 28px; margin-bottom: 10px; }
+        .answer { font-style: italic; font-size: 24px; margin-bottom: 20px; }
+        hr { border: 1px solid #ccc; }
+
+        /* Default Classic Style */
+        .classic { background: white; color: black; }
+        .modern { background: #f4f4f4; color: #333; border-left: 5px solid blue; padding-left: 10px; }
+        .dark { background: black; color: white; }
+        .handwritten { font-family: cursive; background: beige; color: brown; }
+        .royal { background: purple; color: gold; }
+        .newspaper { background: #eee; color: black; font-family: 'Times New Roman', serif; }
+        .tech { background: black; color: cyan; }
+        .retro { background: orange; color: navy; font-family: 'Courier New', monospace; }
+        .elegant { background: linear-gradient(white, gray); color: black; font-family: 'Georgia', serif; }
+        .gradient { background: linear-gradient(to right, red, blue); color: white; }
+    </style>
+</head>
+<body>
+    <h1>Choose a Style for Q&A</h1>
+    <select id="styleSelector">
+        <option value="classic">Classic</option>
+        <option value="modern">Modern</option>
+        <option value="dark">Dark Mode</option>
+        <option value="handwritten">Handwritten</option>
+        <option value="royal">Royal</option>
+        <option value="newspaper">Newspaper</option>
+        <option value="tech">Tech</option>
+        <option value="retro">Retro</option>
+        <option value="elegant">Elegant</option>
+        <option value="gradient">Gradient</option>
+    </select>
+    <button onclick="loadQuestions()">Load Questions</button>
+    <button onclick="downloadImage()">Download as JPG</button>
+
+    <div id="output" class="classic">
+        <p>📌 Click "Load Questions" to see formatted content.</p>
+    </div>
+
+    <script>
+        async function loadQuestions() {
+            try {
+                const response = await fetch("formatted_output.txt"); // Load file
+                const text = await response.text();
+                const questionsAndAnswers = text.split("\n\n").map(q => {
+                    const parts = q.split("\n");
+                    return parts.length > 1 ? `<div class="question">${parts[0]}</div><div class="answer">${parts[1]}</div><hr>` : '';
+                }).join("");
+
+                document.getElementById("output").innerHTML = questionsAndAnswers;
+            } catch (error) {
+                console.error("Error loading file:", error);
+                document.getElementById("output").innerHTML = "<p>⚠️ Failed to load questions.</p>";
+            }
+        }
+
+        document.getElementById("styleSelector").addEventListener("change", function() {
+            document.getElementById("output").className = this.value;
+        });
+
+        function downloadImage() {
+            html2canvas(document.getElementById("output")).then(canvas => {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/jpeg");
+                link.download = "output.jpg";
+                link.click();
+            });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
