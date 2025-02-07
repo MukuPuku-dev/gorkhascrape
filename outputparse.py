@@ -1,6 +1,6 @@
 import os
 
-def process_text(input_file, output_file):
+def process_text(input_file, output_file, qa_output_file):
     # Check if input file exists
     if not os.path.exists(input_file):
         print(f"Error: The file {input_file} does not exist.")
@@ -15,6 +15,7 @@ def process_text(input_file, output_file):
         return
 
     output_lines = []
+    qa_lines = []
     current_question = ''
     current_answer = ''
     current_explanation = ''
@@ -32,7 +33,10 @@ def process_text(input_file, output_file):
                 output_lines.append(f"question_{current_question[3:]}\n")
                 output_lines.append(f"A_{current_answer[2:]}\n")
                 output_lines.append(f"B_ C_ D_ Explanation_{current_explanation}\n")
-                
+
+                # Add question and answer only for QA file
+                qa_lines.append(f"question_{current_question[3:]}\n")
+                qa_lines.append(f"A_{current_answer[2:]}\nB_ \nC_ \nD_ \n")
 
             # Now, set the new question
             current_question = line
@@ -51,7 +55,11 @@ def process_text(input_file, output_file):
         output_lines.append(f"A_{current_answer[2:]}\n")
         output_lines.append(f"B_ C_ D_ Explanation_{current_explanation}\n")
 
-    # Write the formatted output to the output file
+        # Add the last question-answer block to QA file
+        qa_lines.append(f"question_{current_question[3:]}\n")
+        qa_lines.append(f"A_{current_answer[2:]}\nB_ \nC_ \nD_ \n")
+
+    # Write the formatted output to the main output file
     try:
         with open(output_file, 'w', encoding='utf-8') as file:
             file.writelines(output_lines)
@@ -59,5 +67,13 @@ def process_text(input_file, output_file):
     except Exception as e:
         print(f"Error writing to file: {e}")
 
+    # Write the questions and answers to QAonly.txt
+    try:
+        with open(qa_output_file, 'w', encoding='utf-8') as file:
+            file.writelines(qa_lines)
+        print(f"QA-only output saved to {qa_output_file}")
+    except Exception as e:
+        print(f"Error writing to QA-only file: {e}")
+
 # Example usage:
-process_text('output.txt', 'formatted_output.txt')
+process_text('output.txt', 'formatted_output.txt', 'QAonly.txt')
