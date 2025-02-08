@@ -8,7 +8,7 @@ OUTPUT_IMAGE_PREFIX = 'output_image'
 OUTPUT_FOLDER = 'Images_MCQ'  # Folder name updated to Images_MCQ
 FONT_NAME = 'Kalimati'  # Use installed font name
 FONT_SIZE = 30
-IMAGE_WIDTH = 1000
+IMAGE_WIDTH = 800
 MARGIN = 50
 MAX_QUESTIONS_PER_IMAGE = 1  # One question per image
 TEXT_WIDTH = IMAGE_WIDTH - 2 * MARGIN
@@ -120,13 +120,15 @@ def get_style(style_choice):
         .option { font-size: 22px; color: #0000ff; font-style: italic; background: #fff; padding: 5px; border-radius: 5px; }
         hr { border-top: 2px dashed #000; }
         """
-    elif style_choice == "12":  # Gradient
+    elif style_choice == "12":  # Eye-Catching Gradient
         return """
-        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: linear-gradient(to right, #ff9a9e, #fad0c4); color: #222; }
-        .question { font-weight: bold; font-size: 34px; color: #fff; background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px; }
-        .option { font-size: 30px; color: #fff; font-style: italic; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px; }
-        hr { border-top: 2px solid white; }
+        body { font-family: 'Kalimati', sans-serif; font-size: 32px; background: linear-gradient(135deg, #ff6a00, #ee0979, #00c9ff, #92fe9d); color: #fff; text-align: center; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; padding: 20px; border-radius: 15px; background: rgba(0, 0, 0, 0.6); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+        .question { font-weight: bold; font-size: 36px; color: #fff; background: linear-gradient(45deg, #ff4e50, #fc913a); padding: 15px; border-radius: 15px; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); }
+        .option { font-size: 32px; color: #fff; font-style: italic; background: linear-gradient(45deg, #1f4037, #99f2c8); padding: 15px; border-radius: 15px; }
+        hr { border: 4px solid #fff; border-radius: 5px; margin-top: 20px; }
         """
+
     elif style_choice == "13":  # KBC
         return """
         body { font-family: 'Kalimati', sans-serif; background: #000; color: #ffd700; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
