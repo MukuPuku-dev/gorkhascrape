@@ -5,10 +5,10 @@ import os
 # Constants
 INPUT_FILE = 'QAonly.txt'
 OUTPUT_IMAGE_PREFIX = 'output_image'
-OUTPUT_FOLDER = 'Images_MCQ'  # Folder name updated to Images_MCQ
+OUTPUT_FOLDER = 'output_images'  # Folder name updated to Images_MCQ
 FONT_NAME = 'Kalimati'  # Use installed font name
 FONT_SIZE = 30
-IMAGE_WIDTH = 800
+IMAGE_WIDTH = 900
 MARGIN = 50
 MAX_QUESTIONS_PER_IMAGE = 1  # One question per image
 TEXT_WIDTH = IMAGE_WIDTH - 2 * MARGIN
@@ -203,9 +203,10 @@ def generate_images_from_file(file_path):
     image_number = 1
 
     for question, options in questions_and_answers:
-        html_content = create_html_content(question, options, style_choice)
+        html_content = create_html_content(question, options, style_choice)    
+              
         output_path = os.path.join(OUTPUT_FOLDER, f"{OUTPUT_IMAGE_PREFIX}_{image_number}.jpg")
-
+        
         options = {
             'encoding': 'UTF-8',
             'quality': 100,
@@ -214,12 +215,15 @@ def generate_images_from_file(file_path):
         }
 
         try:
+            # Generate the image from HTML content
             imgkit.from_string(html_content, output_path, options=options)
             print(f"Saved image: {OUTPUT_IMAGE_PREFIX}_{image_number}.jpg")
         except Exception as e:
             print(f"Error generating image: {e}")
 
+        # Increment the image number for the next image
         image_number += 1
+
 
 # Run the program
 generate_images_from_file(INPUT_FILE)
