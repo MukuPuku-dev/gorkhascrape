@@ -111,12 +111,13 @@ def process_output_file(input_file, output_file, qa_output_file):
                 explanations = []
 
                 # Check if the answer is on the same line as the question
-                if answer_match:
+                if answer_match and '?' not in answer_match.group(1):
                     answer = answer_match.group(1).strip()
                     explanations.extend(explanation_match)
             elif answer_match and answer is None:
-                answer = answer_match.group(1).strip()
-                explanations.extend(explanation_match)
+                if '?' not in answer_match.group(1):
+                    answer = answer_match.group(1).strip()
+                    explanations.extend(explanation_match)
             elif answer_match:
                 explanations.append("– " + answer_match.group(1).strip())
                 explanations.extend(explanation_match)
