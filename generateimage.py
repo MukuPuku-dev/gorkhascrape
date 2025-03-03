@@ -27,7 +27,9 @@ styles = {
     "9": "Handwritten",
     "10": "Royal",
     "11": "Retro",
-    "12": "Gradient"
+    "12": "Gradient",
+    "13": "KBC",
+    "14": "Futuristic",
 }
 
 print("Choose a style for your question-answer format:")
@@ -97,7 +99,7 @@ def get_style(style_choice):
         """
     elif style_choice == "9":  # Handwritten
         return """
-        body { font-family: 'Patrick Hand', cursive; font-size: 30px; background: #f9f4dc; color: #5a4231; }
+        body { font-family: 'Kalimati', cursive; font-size: 30px; background: #f9f4dc; color: #5a4231; }
         .question { font-weight: bold; font-size: 34px; color: #3e2723; background: #fff8e1; padding: 10px; border-radius: 10px; border: 2px dashed #795548; }
         .answer { font-size: 30px; color: #5d4037; font-style: italic; background: #ffecb3; padding: 10px; border-radius: 10px; }
         hr { border-top: 2px dashed #795548; }
@@ -122,6 +124,28 @@ def get_style(style_choice):
         .question { font-weight: bold; font-size: 34px; color: #fff; background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px; }
         .answer { font-size: 30px; color: #fff; font-style: italic; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px; }
         hr { border-top: 2px solid white; }
+        """
+    elif style_choice == "13":  # KBC
+        return """
+        body { font-family: 'Kalimati', sans-serif; background: #000; color: #ffd700; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: rgba(0, 0, 0, 0.7); padding: 30px; border-radius: 10px; width: 80%; max-width: 900px; }
+        .question { font-size: 36px; font-weight: bold; margin-bottom: 20px; text-align: center; }
+        .options { width: 100%; border-collapse: collapse; }
+        .options td { padding: 15px; text-align: center; }
+        .option { background: #222; border-radius: 5px; cursor: pointer; transition: background 0.3s ease; font-size: 32px; display:inline-block; width:100%;}
+        .option:hover { background: #444; }
+        hr { border-top: 1px solid #666; margin-top: 30px; }
+        """
+    elif style_choice == "14":
+        return """
+        body { font-family: 'Kalimati', sans-serif; background: #0f0f0f; color: #00ffcc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: rgba(15, 15, 15, 0.9); padding: 30px; border-radius: 15px; width: 80%; max-width: 900px; box-shadow: 0 0 20px rgba(0, 255, 204, 0.5); }
+        .question { font-size: 36px; font-weight: bold; margin-bottom: 20px; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+        .options { width: 100%; border-collapse: collapse; }
+        .options td { padding: 15px; text-align: center; }
+        .option { background: #1a1a1a; border-radius: 10px; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; font-size: 32px; display: inline-block; width: 100%; }
+        .option:hover { background: #333; transform: scale(1.05); }
+        hr { border-top: 1px solid #00ffcc; margin-top: 30px; }
         """
     else:  # Default to Classic if an invalid choice is entered
         return get_style("1")

@@ -8,7 +8,7 @@ OUTPUT_IMAGE_PREFIX = 'output_image'
 OUTPUT_FOLDER = 'output_images'  # Folder name updated to Images_MCQ
 FONT_NAME = 'Kalimati'  # Use installed font name
 FONT_SIZE = 30
-IMAGE_WIDTH = 900
+IMAGE_WIDTH = 1000
 MARGIN = 50
 MAX_QUESTIONS_PER_IMAGE = 1  # One question per image
 TEXT_WIDTH = IMAGE_WIDTH - 2 * MARGIN
@@ -30,7 +30,8 @@ styles = {
     "10": "Royal",
     "11": "Retro",
     "12": "Gradient",
-    "13": "KBC"  # Added KBC style
+    "13": "KBC",
+      "14":"Futuristic",  # Added KBC style
 }
 
 print("Choose a style for your question-answer format:")
@@ -44,9 +45,9 @@ column_choice = input("Choose column type:\n1. Single Column\n2. Two Columns\nEn
 def get_style(style_choice):
     if style_choice == "1":  # Classic
         return """
-        body { font-family: 'Kalimati', sans-serif; font-size: 30px; color: #333; background: #fff; }
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; color: #333; background: #fff; padding: 20px; }
         .question { font-weight: bold; color: black; margin-bottom: 10px; }
-        .option { font-style: italic; color: #555; margin-bottom: 20px; }
+        .option { font-style: italic; color: #555; margin-bottom: 20px; font-size: 30px; }
         hr { border: 1px solid #ccc; }
         """
     elif style_choice == "2":  # Modern
@@ -80,10 +81,10 @@ def get_style(style_choice):
         """
     elif style_choice == "6":  # Dark Mode
         return """
-        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: #222; color: #fff; }
+        body { font-family: 'Kalimati', sans-serif; font-size: 30px; background: #222; color: #fff;  padding: 20px; }
         .question { font-weight: bold; font-size: 34px; color: #ffcc00; border-left: 4px solid #ffcc00; padding-left: 10px; }
-        .option { font-size: 30px; color: #0ff; font-style: italic; }
-        hr { border-top: 1px solid #666; }
+        .option { font-size: 30px; color: #0ff; font-style: italic;  padding: 20px; }
+        hr { border-top: 3px solid #666; }
         """
     elif style_choice == "7":  # Newspaper
         return """
@@ -101,7 +102,7 @@ def get_style(style_choice):
         """
     elif style_choice == "9":  # Handwritten
         return """
-        body { font-family: 'Patrick Hand', cursive; font-size: 30px; background: #f9f4dc; color: #5a4231; }
+        body { font-family: 'Kalimati', cursive; font-size: 30px; background: #f9f4dc; color: #5a4231; }
         .question { font-weight: bold; font-size: 34px; color: #3e2723; background: #fff8e1; padding: 10px; border-radius: 10px; border: 2px dashed #795548; }
         .option { font-size: 30px; color: #5d4037; font-style: italic; background: #ffecb3; padding: 10px; border-radius: 10px; }
         hr { border-top: 2px dashed #795548; }
@@ -139,6 +140,17 @@ def get_style(style_choice):
         .option { background: #222; border-radius: 5px; cursor: pointer; transition: background 0.3s ease; font-size: 32px; display:inline-block; width:100%;}
         .option:hover { background: #444; }
         hr { border-top: 1px solid #666; margin-top: 30px; }
+        """
+    elif style_choice == "14":
+        return """
+        body { font-family: 'Kalimati', sans-serif; background: #0f0f0f; color: #00ffcc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: rgba(15, 15, 15, 0.9); padding: 30px; border-radius: 15px; width: 80%; max-width: 900px; box-shadow: 0 0 20px rgba(0, 255, 204, 0.5); }
+        .question { font-size: 36px; font-weight: bold; margin-bottom: 20px; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+        .options { width: 100%; border-collapse: collapse; }
+        .options td { padding: 15px; text-align: center; }
+        .option { background: #1a1a1a; border-radius: 10px; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; font-size: 32px; display: inline-block; width: 100%; }
+        .option:hover { background: #333; transform: scale(1.05); }
+        hr { border-top: 1px solid #00ffcc; margin-top: 30px; }
         """
     else:  # Default to Classic if an invalid choice is entered
         return get_style("1")

@@ -2,23 +2,23 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
-
 def get_gorkhapatra_links():
-    
-    # Step 1: Scrape the main page to collect links
+    session = requests.Session()
     base_url = "https://gorkhapatraonline.com"
     main_url = base_url + "/categories/loksewa?page=1"
+    
+    start_time = time.time()
     try:
-        response = requests.get(main_url)
+        response = session.get(main_url)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the main page: {e}")
         exit()
+    print(f"Time to fetch main page: {time.time() - start_time:.2f} seconds")
 
     soup = BeautifulSoup(response.text, "html.parser")
     links_list = []
 
-    # Find all 'div' with class 'item-img'
     items = soup.find_all("h2", class_="item-title")
 
     for item in items:
@@ -32,36 +32,34 @@ def get_gorkhapatra_links():
         print("No links found to scrape.")
         exit()
 
-    # Display available links with numbers
     print("\nFound the following links:")
     for idx, link in enumerate(links_list, 1):
         print(f"{idx}: {link}")
 
-    # Get user selection
     selected_links = []
     while True:
-        user_input = input(f"\nEnter the number of the link to scrape (1-{len(links_list)}), "
+        user_input = input(f"\nEnter the numbers of the links to scrape (e.g., 1,2,3), "
                         "or 'all' to scrape all: ").strip().lower()
         
         if user_input == 'all':
             selected_links = links_list
             break
-        elif user_input.isdigit():
-            choice = int(user_input)
-            if 1 <= choice <= len(links_list):
-                selected_links = [links_list[choice - 1]]
-                break
-            else:
-                print(f"Please enter a number between 1 and {len(links_list)}.")
         else:
-            print(f"Invalid input. Please enter 'all' or a number between 1 and {len(links_list)}.")
+            try:
+                choices = [int(x) for x in user_input.split(',')]
+                if all(1 <= choice <= len(links_list) for choice in choices):
+                    selected_links = [links_list[choice - 1] for choice in choices]
+                    break
+                else:
+                    print(f"Please enter numbers between 1 and {len(links_list)}.")
+            except ValueError:
+                print(f"Invalid input. Please enter 'all' or a comma-separated list of numbers between 1 and {len(links_list)}.")
 
-    # Step 2: Visit selected links and extract content
     with open("output.txt", "w", encoding="utf-8") as file:
         for link in selected_links:
             print(f"\n🔗 Fetching content from: {link}")
             try:
-                page_response = requests.get(link)
+                page_response = session.get(link)
                 page_response.raise_for_status()
             except requests.exceptions.RequestException as e:
                 print(f"Error fetching the page: {e}")
@@ -80,25 +78,25 @@ def get_gorkhapatra_links():
             else:
                 file.write(f"⚠️ No relevant 'blog-details' section found on: {link}\n\n")
 
-            # Optional: Sleep to avoid overloading the server
-            # time.sleep(1)
 def get_nepal_samacharpatra_links():
-    base_url = "https://newsofnepal.com/loksewa/"
+    session = requests.Session()
+    base_url = "https://newsofnepal.com/loksewa"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.0.0"
     }
 
+    start_time = time.time()
     try:
-        response = requests.get(base_url, headers=headers)
+        response = session.get(base_url, headers=headers)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the Nepal Samacharpatra page: {e}")
         return []
+    print(f"Time to fetch main page: {time.time() - start_time:.2f} seconds")
 
     soup = BeautifulSoup(response.text, "html.parser")
     links_list = []
 
-    # Find all 'div' with class 'card uk-card uk-card-small uk-card-default'
     cards = soup.find_all("div", class_="card uk-card uk-card-small uk-card-default")
 
     for card in cards:
@@ -114,36 +112,34 @@ def get_nepal_samacharpatra_links():
         print("No links found to scrape.")
         exit()
 
-    # Display available links with numbers
     print("\nFound the following links:")
     for idx, link in enumerate(links_list, 1):
         print(f"{idx}: {link}")
 
-    # Get user selection
     selected_links = []
     while True:
-        user_input = input(f"\nEnter the number of the link to scrape (1-{len(links_list)}), "
+        user_input = input(f"\nEnter the numbers of the links to scrape (e.g., 1,2,3), "
                         "or 'all' to scrape all: ").strip().lower()
         
         if user_input == 'all':
             selected_links = links_list
             break
-        elif user_input.isdigit():
-            choice = int(user_input)
-            if 1 <= choice <= len(links_list):
-                selected_links = [links_list[choice - 1]]
-                break
-            else:
-                print(f"Please enter a number between 1 and {len(links_list)}.")
         else:
-            print(f"Invalid input. Please enter 'all' or a number between 1 and {len(links_list)}.")
+            try:
+                choices = [int(x) for x in user_input.split(',')]
+                if all(1 <= choice <= len(links_list) for choice in choices):
+                    selected_links = [links_list[choice - 1] for choice in choices]
+                    break
+                else:
+                    print(f"Please enter numbers between 1 and {len(links_list)}.")
+            except ValueError:
+                print(f"Invalid input. Please enter 'all' or a comma-separated list of numbers between 1 and {len(links_list)}.")
 
-    # Step 2: Visit selected links and extract content
     with open("output.txt", "w", encoding="utf-8") as file:
         for link in selected_links:
             print(f"\n🔗 Fetching content from: {link}")
             try:
-                page_response = requests.get(link, headers=headers)
+                page_response = session.get(link, headers=headers)
                 page_response.raise_for_status()
             except requests.exceptions.RequestException as e:
                 print(f"Error fetching the page: {e}")
@@ -156,15 +152,11 @@ def get_nepal_samacharpatra_links():
             for blog_div in blog_divs:                
                 paragraphs = blog_div.find_all("p")
                 for p in paragraphs:
-                    # Replace <br> tags with new line characters
                     for br in p.find_all("br"):
                         br.replace_with("\n")
                     file.write(p.text.strip() + "\n\n")
                 break
-            
 
-
-# Ask the user which site to scrape
 print("Select the website to scrape:")
 print("1. Gorkhapatra Online")
 print("2. Nepal Samacharpatra")

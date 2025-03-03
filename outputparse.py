@@ -75,6 +75,7 @@ def process_text(input_file, output_file, qa_output_file):
         print(f"QA-only output saved to {qa_output_file}")
     except Exception as e:
         print(f"Error writing to QA-only file: {e}")
+    extract_questions_answers(qa_output_file, "pureQA.txt")
 def process_output_file(input_file, output_file, qa_output_file):
     with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile, open(qa_output_file, 'w', encoding='utf-8') as qa_outfile:
         lines = infile.readlines()
@@ -133,8 +134,34 @@ def process_output_file(input_file, output_file, qa_output_file):
             # Write to QA-only file
             qa_outfile.write(f"question_{question}\n")
             qa_outfile.write(f"A_{answer}\nB_ \nC_ \nD_ \n")
-
+    extract_questions_answers("QAonly.txt", "pureQA.txt")
 # Ask to select one out of the follwing two functions
+def extract_questions_answers(input_file, output_file):
+    with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile:
+        lines = infile.readlines()
+        question_pattern = re.compile(r'^question_(.*)')
+        answer_pattern = re.compile(r'^A_(.*)')
+
+        question = None
+        answer = None
+        index = 1
+
+        for line in lines:
+            line = line.strip()
+            question_match = question_pattern.match(line)
+            answer_match = answer_pattern.match(line)
+
+            if question_match:
+                question = question_match.group(1).strip()
+            elif answer_match:
+                answer = answer_match.group(1).strip()
+                if question and answer:
+                    outfile.write(f"{index}. {question}\n")
+                    outfile.write(f"-> {answer}\n\n")
+                    index += 1
+                question = None
+                answer = None
+
 if __name__ == "__main__":
     print("Select the function to execute:")
     print("1. Format for Gorkhapatra Online")

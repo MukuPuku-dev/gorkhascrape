@@ -1,3 +1,4 @@
 venv/       # Ignore your virtual environment
 __pycache__/  # Ignore Python's compiled bytecode files
 *.pyc       # Ignore .pyc files
+output_images/  # Ignore output images 

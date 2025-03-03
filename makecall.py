@@ -2,6 +2,7 @@ import requests
 import re
 import json
 import os
+import time
 
 SERVER_URL_POST = "https://capricious-dorian-macaroni.glitch.me/postmultipleImages"
 SERVER_URL_COMMENTS = "https://capricious-dorian-macaroni.glitch.me/makeComments"
@@ -12,6 +13,7 @@ IMAGE_FOLDER = "output_images"
 
 PAGE_ACCESS_TOKEN = "YOUR_PAGE_ACCESS_TOKEN"  # Replace with actual token
 
+MAX_IMAGES_PER_BATCH = 60  # Maximum number of images to send in a single request
 
 def extract_answers(filepath):
     """Extracts answers from QAonly.txt (for comments)"""
@@ -67,22 +69,22 @@ def get_image_files():
 
     image_extensions = {".jpg", ".jpeg", ".png", ".gif"}  # Allowed extensions
     image_files = sorted(
-    [
-        os.path.join(IMAGE_FOLDER, f)
-        for f in os.listdir(IMAGE_FOLDER)
-        if os.path.splitext(f)[1].lower() in image_extensions
-    ],
-    key=lambda x: int(re.search(r'\d+', x).group())  # Extract number and sort numerically
-)
+        [
+            os.path.join(IMAGE_FOLDER, f)
+            for f in os.listdir(IMAGE_FOLDER)
+            if os.path.splitext(f)[1].lower() in image_extensions
+        ],
+        key=lambda x: int(re.search(r"\d+", x).group())  # Extract number and sort numerically
+    )
 
     if not image_files:
         print("No images found in 'output_images'.")
-    
+
     return image_files
 
 
 def post_images():
-    """Handles posting images with or without captions."""
+    """Handles posting images in batches with or without captions."""
     captions_option = input("Post with captions? (yes/no): ").strip().lower()
 
     captions = []
@@ -96,32 +98,62 @@ def post_images():
         print("No images found to upload.")
         return
 
-    files = [("images", (os.path.basename(img), open(img, "rb"), "image/jpeg")) for img in image_paths]
+    total_images = len(image_paths)
+    print(f"Found {total_images} images to upload.")
 
-    data = {}
-    if captions:
-        data["captions"] = json.dumps(captions)
-        print("Captions:", captions)
+    all_image_ids = []  # Store all image IDs from all batches
+    all_post_ids = [] #store all post ids
+    for i in range(0, total_images, MAX_IMAGES_PER_BATCH):
+        # Process images in batches
+        batch_image_paths = image_paths[i:i + MAX_IMAGES_PER_BATCH]
+        print(f"Processing batch {int(i/MAX_IMAGES_PER_BATCH)+1} of images from index {i} to {min(i + MAX_IMAGES_PER_BATCH,total_images)}")
+        
+        files = [("images", (os.path.basename(img), open(img, "rb"), "image/jpeg")) for img in batch_image_paths]
+        data = {}
 
-    response = requests.post(SERVER_URL_POST, files=files, data=data)
+        if captions:
+          # Adjust captions for the current batch
+            batch_captions = captions[i:i + MAX_IMAGES_PER_BATCH]
+            data["captions"] = json.dumps(batch_captions)
+            print("Captions:", batch_captions)
 
-    if response.status_code == 200:
-        res_json = response.json()
-        post_id = res_json.get("postId")
-        image_ids = res_json.get("image_ids", [])
+        try:
+          response = requests.post(SERVER_URL_POST, files=files, data=data)
+          response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+          print(f"Error posting image batch: {e}")
+          continue
 
+        if response.status_code == 200:
+            res_json = response.json()
+            post_id = res_json.get("postId")
+            image_ids = res_json.get("image_ids", [])
+            
+            all_post_ids.append(post_id)
+            all_image_ids.extend(image_ids) #add this line
+            print(f"Batch posted successfully! Post ID: {post_id}")
+            print(f"Image IDs in this batch: {image_ids}")
+
+        else:
+            print(f"Error posting image batch: {response.text}")
+        time.sleep(5)
+
+    # Save all image IDs to ids.txt (outside the loop)
+    if all_post_ids:
         with open(IDS_FILE, "w") as file:
-            file.write(f"Post ID: {post_id}\n")
-            file.write("Image IDs:\n")
-            for img_id in image_ids:
+            
+            file.write("Post IDs:\n")
+            for p_id in all_post_ids:
+                file.write(f"{p_id}\n")
+
+            file.write("\nImage IDs:\n")
+            unique_image_ids = list(set(all_image_ids)) # remove duplicates.
+            for img_id in unique_image_ids:
                 file.write(f"{img_id}\n")
 
-        print("Images posted successfully!")
-        print(f"Post ID: {post_id}")
-        print(f"Image IDs: {image_ids}")
+        print(f"All {len(unique_image_ids)} unique image IDs saved to {IDS_FILE}")
     else:
-        print("Error posting images:", response.text)
-
+      print("No Images was able to upload")
 
 def post_all_comments():
     """Handles posting comments with or without image IDs."""
