@@ -12,7 +12,8 @@ styles = {
     "11": "Retro",
     "12": "Gradient",
     "13": "KBC",
-      "14":"Futuristic",  # Added KBC style
+      "14":"Futuristic",
+        "15":"KBC Style",  # Added KBC style
 }
 
 # Define different CSS styles
@@ -97,14 +98,14 @@ def get_style(style_choice):
         """
     elif style_choice == "12":  # Eye-Catching Gradient
         return """
-        body { font-family: 'Kalimati', sans-serif; font-size: 32px; background: linear-gradient(135deg, #ff6a00, #ee0979, #00c9ff, #92fe9d); color: #fff; text-align: center; margin: 0; padding: 20px; }
+        body { font-family: 'Kalimati', sans-serif; font-size: 32px; background: rgba(0, 0, 0, 0.6); color: #fff; text-align: center; margin: 0; padding: 20px; }
         .container { max-width: 900px; margin: auto; padding: 20px; border-radius: 15px; background: rgba(0, 0, 0, 0.6); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
         .question { font-weight: bold; font-size: 36px; color: #fff; background: linear-gradient(45deg, #ff4e50, #fc913a); padding: 15px; border-radius: 15px; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); }
         .option { font-size: 32px; color: #fff; font-style: italic; background: linear-gradient(45deg, #1f4037, #99f2c8); padding: 15px; border-radius: 15px; }
         hr { border: 4px solid #fff; border-radius: 5px; margin-top: 20px; }
         """
 
-    elif style_choice == "13":  # KBC
+    elif style_choice == "13":  
         return """
         body { font-family: 'Kalimati', sans-serif; background: #000; color: #ffd700; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .container { background: rgba(0, 0, 0, 0.7); padding: 30px; border-radius: 10px; width: 80%; max-width: 900px; }
@@ -125,6 +126,49 @@ def get_style(style_choice):
         .option { background: #1a1a1a; border-radius: 10px; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; font-size: 32px; display: inline-block; width: 100%; }
         .option:hover { background: #333; transform: scale(1.05); }
         hr { border-top: 1px solid #00ffcc; margin-top: 30px; }
+        """
+    elif style_choice == "15":  # KBC Style
+        return """
+        body { font-family: 'Kalimati', sans-serif; background: #003466; /* Dark blue background for the body */
+            color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; 
+        }
+        .container { background: #003366; /* Dark blue background for the container */
+            padding: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); border: 3px solid #ffd700; /* Yellow border around the container */
+        }
+        .logo-container {
+            display: flex;            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            # border: 3px solid #000; /* Black border around the logo */
+            object-fit: cover;
+        }
+        .question { font-size: 36px; font-weight: bold; margin-bottom: 20px; text-align: center; color: #fff; background: #001a4d; /* Dark blue background for the question */
+            padding: 15px; border-radius: 10px; border: 2px solid #ffd700; /* Yellow border around the question */
+        }
+        .options { width: auto; margin: 0 auto; display: table; /* Ensure the table only takes up as much space as needed */
+        }
+        .options td { padding: 10px 20px; text-align: left; /* Align labels and values to the left */
+        }
+        .option { display: flex; /* Use flexbox to align label and value */
+            align-items: center; background: #001a4d; /* Dark blue background for options */
+            color: #fff; border: 2px solid #ffd700; /* Yellow border around options */
+            border-radius: 10px; padding: 10px; font-size: 36px; font-weight: bold; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; 
+        }
+        
+        .option-label { color: #ffd700; /* Yellow color for option labels (A, B, C, D) */
+            font-weight: bold; margin-right: 10px; /* Add spacing between label and value */
+            flex-shrink: 0; /* Prevent the label from shrinking */
+            width: 30px; /* Fixed width for labels to ensure alignment */
+            text-align: right; /* Align labels to the right */
+        }
+        hr { border-top: 2px solid #ffd700; /* Yellow horizontal line */
+            margin-top: 20px; 
+        }
         """
     else:  # Default to Classic if an invalid choice is entered
         return get_style("1")

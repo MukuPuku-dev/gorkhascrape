@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
-def get_gorkhapatra_links():
+def get_gorkhapatra_links(keyword):
     session = requests.Session()
     base_url = "https://gorkhapatraonline.com"
     main_url = base_url + "/categories/loksewa?page=1"
@@ -23,7 +23,7 @@ def get_gorkhapatra_links():
 
     for item in items:
         link_tag = item.find("a")
-        if link_tag and "लोक सेवा विशेष वस्तुगत" in link_tag.get_text():
+        if link_tag and keyword in link_tag.get_text():
             href = link_tag.get("href")
             full_link = href if href.startswith("http") else base_url + href
             links_list.append(full_link)
@@ -78,9 +78,9 @@ def get_gorkhapatra_links():
             else:
                 file.write(f"⚠️ No relevant 'blog-details' section found on: {link}\n\n")
 
-def get_nepal_samacharpatra_links():
+def get_nepal_samacharpatra_links(keyword):
     session = requests.Session()
-    base_url = "https://newsofnepal.com/loksewa"
+    base_url = "https://newsofnepal.com/loksewa/page/3/"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.0.0"
     }
@@ -101,7 +101,7 @@ def get_nepal_samacharpatra_links():
 
     for card in cards:
         text_element = card.find("a", class_="uk-heading-bullet")
-        if text_element and "वस्तुगत सामग्री" in text_element.get_text():
+        if text_element and keyword in text_element.get_text():
             link_tag = card.find("a", href=True)
             if link_tag:
                 href = link_tag["href"]
@@ -164,9 +164,31 @@ print("2. Nepal Samacharpatra")
 choice = input("Enter 1 or 2: ").strip()
 
 if choice == "1":
-    links = get_gorkhapatra_links()
+    print("Select the keyword to search for:")
+    print("1. लोक सेवा विशेष वस्तुगत")
+    print("2. विषयगत प्रश्नोत्तर")
+    keyword_choice = input("Enter 1 or 2: ").strip()
+    if keyword_choice == "1":
+        keyword = "लोक सेवा विशेष वस्तुगत"
+    elif keyword_choice == "2":
+        keyword = "विषयगत प्रश्नोत्तर"
+    else:
+        print("Invalid choice! Exiting...")
+        exit()
+    links = get_gorkhapatra_links(keyword)
 elif choice == "2":
-    links = get_nepal_samacharpatra_links()
+    print("Select the keyword to search for:")
+    print("1. वस्तुगत सामग्री")
+    print("2. विषयगत प्रश्नोत्तर")
+    keyword_choice = input("Enter 1 or 2: ").strip()
+    if keyword_choice == "1":
+        keyword = "वस्तुगत सामग्री"
+    elif keyword_choice == "2":
+        keyword = "विषयगत प्रश्नोत्तर"
+    else:
+        print("Invalid choice! Exiting...")
+        exit()
+    links = get_nepal_samacharpatra_links(keyword)
 else:
     print("Invalid choice! Exiting...")
     exit()

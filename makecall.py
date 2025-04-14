@@ -142,12 +142,12 @@ def post_images():
     if all_post_ids:
         with open(IDS_FILE, "w") as file:
             
-            file.write("Post IDs:\n")
+            file.write("Post ID: ")
             for p_id in all_post_ids:
-                file.write(f"{p_id}\n")
+                file.write(f"{p_id}")
 
-            file.write("\nImage IDs:\n")
-            unique_image_ids = list(set(all_image_ids)) # remove duplicates.
+            file.write("\nImage IDs: \n")
+            unique_image_ids = list(dict.fromkeys(all_image_ids))
             for img_id in unique_image_ids:
                 file.write(f"{img_id}\n")
 
@@ -177,8 +177,11 @@ def post_all_comments():
     }
 
     if comment_option == "yes" and image_ids:
+        #remove post_id from data
+        data.pop("POST_ID", None)
+        # Add image IDs to the data
         data["image_ids"] = image_ids
-
+    print("Data to be sent:", data)
     response = requests.post(SERVER_URL_COMMENTS, json=data)
 
     if response.status_code == 200:

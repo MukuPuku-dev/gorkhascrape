@@ -10,6 +10,7 @@ FONT_NAME = 'Kalimati'  # Use installed font name
 FONT_SIZE = 30
 IMAGE_WIDTH = 1000
 MARGIN = 50
+IMAGE_HEIGHT = 800  # Height of the image
 MAX_QUESTIONS_PER_IMAGE = 1  # One question per image
 TEXT_WIDTH = IMAGE_WIDTH - 2 * MARGIN
 
@@ -27,10 +28,32 @@ column_choice = input("Choose column type:\n1. Single Column\n2. Two Columns\nEn
 
 # Define different CSS styles
 
-def create_html_content(question, options, style_choice):
+def create_html_content(question, options, style_choice, correct_answer):
+    logo_path = os.path.abspath(os.path.join("assets", "loksewa_automatic_logo.jpg"))
+    
     html_content = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>{get_style(style_choice)}</style></head><body>"""
-
-    if column_choice == "2":  # KBC
+    if style_choice == "15":  # KBC Style
+        html_content += f"""
+        <div class="container">
+            <div class="logo-container" align="center">
+                <img src="file:///{logo_path}" alt="App Logo" class="logo" />
+            </div>
+           
+            <div class="question">{question}</div>
+            <hr />
+            <table class="options">
+                <tr>
+                    <td><div class="option"><span class="option-label">A:</span> {options[0]}</div></td>
+                    <td><div class="option"><span class="option-label">B:</span> {options[1]}</div></td>
+                </tr>
+                <tr>
+                    <td><div class="option"><span class="option-label">C:</span> {options[2]}</div></td>
+                    <td><div class="option"><span class="option-label">D:</span> {options[3]}</div></td>
+                </tr>
+            </table>
+        </div>
+        """
+    elif column_choice == "2":  # KBC
         html_content += f"""
         <div class="container">
             <div class="question">{question}</div>
@@ -52,7 +75,9 @@ def create_html_content(question, options, style_choice):
             {''.join([f'<div class="option">{chr(65 + idx)}. {option}</div>' for idx, option in enumerate(options)])}
         </div>
         """
-
+   
+    # Add a small message encouraging the user to comment to receive the correct answer
+    html_content += f"""<div style="font-size: 10px; text-align: right;">Comment your answer to get the correct answer in inbox!</div>"""
     html_content += "</body></html>"  # Close the HTML tags here
     return html_content
 
@@ -63,21 +88,32 @@ def extract_questions_and_answers(file_path):
 
     current_question = None
     current_options = []
+    correct_answer = None
 
     for line in lines:
         line = line.strip()
         if line.startswith("question_"):
             if current_question and len(current_options) == 4:
                 random.shuffle(current_options)
-                questions_and_answers.append((current_question, current_options))
+                questions_and_answers.append((current_question, current_options, correct_answer))
             current_question = line.replace("question_", "").strip()
             current_options = []
+            correct_answer = None
         elif line.startswith("A_") or line.startswith("B_") or line.startswith("C_") or line.startswith("D_"):
-            current_options.append(line.replace("A_", "").replace("B_", "").replace("C_", "").replace("D_", "").strip())
+            option = line.replace("A_", "").replace("B_", "").replace("C_", "").replace("D_", "").strip()
+            current_options.append(option)
+            if line.startswith("A_"):
+                correct_answer = "A"
+            elif line.startswith("B_"):
+                correct_answer = "B"
+            elif line.startswith("C_"):
+                correct_answer = "C"
+            elif line.startswith("D_"):
+                correct_answer = "D"
 
     if current_question and len(current_options) == 4:
         random.shuffle(current_options)
-        questions_and_answers.append((current_question, current_options))
+        questions_and_answers.append((current_question, current_options, correct_answer))
 
     return questions_and_answers
 
@@ -85,8 +121,8 @@ def generate_images_from_file(file_path):
     questions_and_answers = extract_questions_and_answers(file_path)
     image_number = 1
 
-    for question, options in questions_and_answers:
-        html_content = create_html_content(question, options, style_choice)    
+    for question, options, correct_answer in questions_and_answers:
+        html_content = create_html_content(question, options, style_choice, correct_answer)    
               
         output_path = os.path.join(OUTPUT_FOLDER, f"{OUTPUT_IMAGE_PREFIX}_{image_number}.jpg")
         
